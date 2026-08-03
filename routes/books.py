@@ -16,8 +16,9 @@ def get_db():
         db.close()
 
 @router.get('/books')
-def get_books():
-    return []
+def get_books(db: Session = Depends(get_db)):
+    books = db.query(Book).all()
+    return books
 
 @router.post('/books')
 def create_book(book: BookCreate, db: Session = Depends(get_db)):
@@ -34,6 +35,12 @@ def create_book(book: BookCreate, db: Session = Depends(get_db)):
     return new_book
 
 
+@router.delete('/books/{book_id}')
+def delete_books(book_id: int, db: Session = Depends(get_db)):
+    delete_books = db.query(Book).filter(Book.id == book_id).first()
 
+    db.delete(delete_books)
+    db.commit()
+    return {'message': 'book deleted'}
 
 
