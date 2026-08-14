@@ -9,3 +9,10 @@ class Book(Base):
     author = Column(String)
     year = Column(Integer)
     genre = Column(String)
+
+class User(Base): 
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String)
+    password = Column(String)
