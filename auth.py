@@ -13,3 +13,7 @@ def create_token(data: dict):
     expire = datetime.utcnow() + timedelta(hours=24)
     to_encode.update({'exp': expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_token(token: str):
+    verify = jwt.decode(token=token, key=SECRET_KEY, algorithms=[ALGORITHM])
+    return verify['sub']
