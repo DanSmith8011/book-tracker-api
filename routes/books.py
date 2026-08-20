@@ -4,6 +4,7 @@ from fastapi import Depends
 from database import SessionLocal
 from schemas import BookCreate
 from models import Book
+from models import User
 from fastapi.security import OAuth2PasswordBearer
 from auth import verify_token
 
@@ -21,16 +22,18 @@ def get_db():
 @router.get('/books')
 def get_books(db: Session = Depends(get_db), token:str = Depends(oauth2_scheme)):
     user_id = verify_token(token)
-    books = db.query(Book).all()
+    books = db.query(Book).filter(user_id == Book.user_id).all()
     return books
 
 @router.post('/books')
-def create_book(book: BookCreate, db: Session = Depends(get_db)):
+def create_book(book: BookCreate, db: Session = Depends(get_db), token:str = Depends(oauth2_scheme)):
+    user_id = verify_token(token)
     new_book = Book(
         title=book.title,
         author=book.author,
         year=book.year,
-        genre=book.genre
+        genre=book.genre,
+        user_id=user_id
     )
 
     db.add(new_book)

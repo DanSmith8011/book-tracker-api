@@ -9,6 +9,7 @@ class Book(Base):
     author = Column(String)
     year = Column(Integer)
     genre = Column(String)
+    user_id = Column(Integer)
 
 class User(Base): 
     __tablename__ = 'users'
