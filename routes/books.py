@@ -22,7 +22,7 @@ def get_db():
 @router.get('/books')
 def get_books(db: Session = Depends(get_db), token:str = Depends(oauth2_scheme)):
     user_id = verify_token(token)
-    books = db.query(Book).filter(user_id == Book.user_id).all()
+    books = db.query(Book).filter(int(user_id) == Book.user_id).all()
     return books
 
 @router.post('/books')
