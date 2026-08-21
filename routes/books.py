@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from database import SessionLocal
 from schemas import BookCreate
 from models import Book
@@ -43,11 +43,16 @@ def create_book(book: BookCreate, db: Session = Depends(get_db), token:str = Dep
 
 
 @router.delete('/books/{book_id}')
-def delete_books(book_id: int, db: Session = Depends(get_db)):
-    delete_books = db.query(Book).filter(Book.id == book_id).first()
+def delete_books(book_id: int, db: Session = Depends(get_db), token:str = Depends(oauth2_scheme)):
+    user_id = verify_token(token)
+    book_to_delete = db.query(Book).filter(Book.id == book_id).first()
+    if book_to_delete.user_id == int(user_id):
+        db.delete(book_to_delete)
+        db.commit()
+        return {'message': 'book deleted'}
+    else:
+        raise HTTPException(status_code=401, detail="Unable to delete book")
 
-    db.delete(delete_books)
-    db.commit()
-    return {'message': 'book deleted'}
+    
 
 
